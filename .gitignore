@@ -1,0 +1,15 @@
+.env
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.streamlit/secrets.toml
+.DS_Store
+**/.DS_Store
+data/app.db
+data/pdfs/*
+data/exports/*
+!data/pdfs/.gitkeep
+!data/exports/.gitkeep
+
+
