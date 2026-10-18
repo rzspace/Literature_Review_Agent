@@ -56,7 +56,8 @@ def generate_keyword_suggestion(topic: str, year_from: int, year_to: int) -> dic
   "title": "中文综述标题",
   "keywords_zh": ["中文关键词1", "中文关键词2"],
   "keywords_en": ["English keyword 1", "English keyword 2"],
-  "search_query": "用于 OpenAlex 的英文检索词"
+  "search_query": "用于 OpenAlex 的英文检索词",
+  "outline": ["综述第一部分", "综述第二部分", "综述第三部分"]
 }}
 
 要求：
@@ -64,6 +65,7 @@ def generate_keyword_suggestion(topic: str, year_from: int, year_to: int) -> dic
 - keywords_zh 输出 4-8 个关键词；
 - keywords_en 输出与中文关键词对应的 4-8 个英文关键词或短语；
 - search_query 使用英文关键词组合，不要包含年份和 OpenAlex 专用语法；
+- outline 输出 4-6 个适合本主题的综述章节标题；
 - 不要虚构具体论文、作者、数据或结论。
 """.strip()
 
@@ -81,7 +83,7 @@ def generate_keyword_suggestion(topic: str, year_from: int, year_to: int) -> dic
 
     content = response.choices[0].message.content or ""
     result = _extract_json(content)
-    required = ("title", "keywords_zh", "keywords_en", "search_query")
+    required = ("title", "keywords_zh", "keywords_en", "search_query", "outline")
     missing = [field for field in required if field not in result]
     if missing:
         raise LLMError(f"模型返回缺少字段：{', '.join(missing)}")
@@ -91,6 +93,8 @@ def generate_keyword_suggestion(topic: str, year_from: int, year_to: int) -> dic
             isinstance(item, str) and item.strip() for item in result[field]
         ):
             raise LLMError(f"模型返回字段 {field} 格式不正确")
+    if not isinstance(result["outline"], list) or not all(isinstance(item, str) for item in result["outline"]):
+        raise LLMError("模型返回字段 outline 格式不正确")
 
     return result
 
